@@ -16,7 +16,7 @@ export const SpeedCalc = {
     speed: (distance, time) => distance / time,
 
     /**
-     * Calculates the distance traveled by an object traveling at a speed for a given time
+     * Calculates the distance travelled by an object travelling at a speed for a given time
      * 
      * f(s, t) = s * t = d
      * 
