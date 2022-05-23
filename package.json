@@ -1,0 +1,27 @@
+{
+  "name": "js-physics-engine",
+  "version": "1.0.0",
+  "description": "A simple physics engine written in JavaScript",
+  "scripts": {
+    "test": "mocha",
+    "dev-build": "webpack --config webpack/webpack.dev.cjs --watch",
+    "build": "webpack --config webpack/webpack.config.cjs"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lindsaykerr/js-physics-engine.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lindsaykerr/js-physics-engine/issues"
+  },
+  "homepage": "https://github.com/lindsaykerr/js-physics-engine#readme",
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  }
+}
