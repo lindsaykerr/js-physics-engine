@@ -42,21 +42,40 @@ export const SpeedCalc = {
 
 export const velocityCalc = {
     /**
-     * Velocity of an object is speed with a direction 
+     * Velocity of an object is a vector comprised of a speed and direction.
+     * 
+     * Be aware that the direction coordinate values will be are normalised to 
+     * the range of -1 to 1. Thus for a given direction, any value could have been used that falls
+     * on the projected direction line. 
+     * 
+     * Eg. A speed of 60 numbers in a single direction of 1002 will be create a 
+     * one dimensional vector that will point at 60. Likewise if that direction was -10 the vector 
+     * would point to -60. There is only one case where direction would affect the magnitude 
+     * and that is when it is 0.     
+     * 
      * @param {number} speed - speed of a travelling object
-     * @param {[number]} direction - represents the direction of travel with respect 
-     * to a coordinate system like (x, y, z). For Vec1, value x is either -1 or 1. 
-     * For Vec2 or Vec3 the values may represent the destination point from the grid
-     * origin.  
+     * @param {number} dirCoord[0] - x coordinate 
+     * @param {number} dirCoord[1] - y coordinate
+     * @param {number} dirCoord[2] - z coordinate
+     * 
      * @returns {Vec1 | Vec2 | Vec3} velocity vector
      */
-    velocity: (speed, direction, measure) => {
+    velocity: (speed, ...dirCoord) => {
+        dirCoord[0] = dirCoord[0] || 1;
         const vector = {
-            1: () => new Vec1(direction[0] * speed),
-            2: () => new Vec2(speed, direction),
+            1: () => {
+                const tempVec = new Vec1();
+                tempVec.fromScalarAndDirection(speed, dirCoord[0]);
+                return tempVec;
+            },
+            2: () => {
+                const tempVec = new Vec2();
+                tempVec.useMagnitudeAndDirection(speed, dirCoord);
+                return tempVec;
+            },
             3: () => {}
         }
-        return vector[direction.length]();
+        return vector[dirCoord.length]();
     },
 }
 
@@ -71,7 +90,7 @@ export const AccelerationCalc = {
      * @param {number} time - time unit
      * @returns {Vec1 | Vec2}
      */
-    acceleration: (oVelocity, fVelocity, time) => fVelocity.subtract(oVelocity).divideBy(time),
+    acceleration: (oVelocity, fVelocity, time) => fVelocity.subtract(oVelocity).divide(time),
     /*
     endSpeed: (startSpeed, acceleration, time) => startSpeed + acceleration * time,
     startSpeed: (endSpeed, acceleration, time) => endSpeed - acceleration * time,

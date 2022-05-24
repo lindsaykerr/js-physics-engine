@@ -1,108 +1,217 @@
-export class Vec{
-
-    /**
-     * The base Vector is comprised of a scalar (the magnitude of 
-     * some unit of measure, this can be a compound measure).
-     *  
-     * @param {number} magnitude - magnitude of one unit measure
-     */
-    constructor(magnitude) {
-        this.magnitude = magnitude;
-    }
-}
-
-
 /**
  * A one dimensional vector
  */
-export class Vec1 extends Vec{
+export class Vec1 {
     /**
-     * Vector1 is comprised of a scalar giving the magnitude of 
-     * one unit of measure (usually a compound measure) and a direction
-     * in the form of a positive or negative value.
-     *  
-     * @param {number} magnitude - +|-(scalar), + represents forward, - backward direction
+     * Constructs a one dimensional vector 
+     * @param {number} [point] 
      */
-    constructor(magnitude) {
-        super(magnitude);
-        this.coordinate = this.magnitude;
+    constructor(point) {
+        this.point = point || 0;
+        this.magnitude = this.#calcNewMagnitude();
     }
     /**
-     * 
-     * @param {Vec1} vec1
+     * Add two one dimensional vectors
+     * @param {Vec1} vec1 
+     * @returns {Vec1}  
      */
     add(vec1) {
-        return new Vec1(this.coordinate + vec1.coordinate);
+        return new Vec1(this.point + vec1.point);
     }
-}
-
-export class Vec2 {
     /**
-     * 
-     * @param {[number]} magnitude 
-     * @param {[number]} directionCoord 
+     * Subtract two one dimensional vectors
+     * @param {Vec1} vec1 
+     * @returns {Vec1} 
      */
-    constructor(magnitude, directionCoord) {
-        this.magnitude = magnitude || 0;
-        if (directionCoord) {
-            this.setCoordinate(directionCoord);
-        }
-        else {
-            this.coordinate = [0,0];
-        }
+    subtract(vec1) {
+        return new Vec1(this.point - vec1.point);
+    }
+    /**
+     * Multiplies a vector by a value
+     * @param {number} value 
+     * @returns {Vec1}
+     */
+    multiply(value) {
+        return new Vec1(this.point * value);
     }
 
-    setValues(magnitude, dirCoordinate) {
-        this.setMagnitude(magnitude);
-        this.setCoordinate(dirCoordinate);
+    /**
+     * Divide a vector by a value
+     * @param {number} value 
+     * @returns {Vec1}
+     */
+    divide(value) {
+        return new Vec1(this.point / value);
     }
-    setMagnitude(magnitude) {
-        this.magnitude = magnitude;
-    }
-    setCoordinate(directionCoord) {
-        this.coordinate = Vec2.normaliseCoordinates(directionCoord).map(x => x*this.magnitude)
-    }
+    /**
+     * Changing the scale factor of the vector
+     * @param {number} factor 
+     */
 
-
-    static normaliseCoordinates(coordinates) {
-        const x = coordinates[0];
-        const y = coordinates[1];
-        /* 
-         * To calculate the radius of circle using x y coordinates: r = sqrt(x^2 + y^2)
-         * To find the difference between a radius of 1 and the calculated radius: d = 1/r
-         * Normalise the coordinates to a radius of 1 by multiplying them by the d
-         */
-        const oneUnitRadiusRatio = (1/(Math.sqrt(x*x + y*y)))
-        return [x*oneUnitRadiusRatio, y*oneUnitRadiusRatio];
-    }
-
-    add(vec2) {
-        const magnitude = Math.sqrt(
-            Math.abs(this.coordinate[0]*vec2.coordinate[0] + this.coordinate[1]+ vec2.coordinate[1])
-        );
-        const vecAddition = [
-            this.coordinate[0] + vec2.coordinate[0], 
-            this.coordinate[1] + vec2.coordinate[1]
-        ];
-        const vec2Result = new Vec2();
-        vec2Result.magnitude = magnitude;
-        vec2Result.coordinate = vecAddition;
-        return vec2Result;
+    /**
+     * Scale the size of vector
+     * @param {number} factor 
+     */
+    scale(factor) {
+        this.point *= factor;
+        this.magnitude = this.#calcNewMagnitude()
     }
     
+    /*
+     * Give the magnitude of the vector
+     */
+    #calcNewMagnitude() {
+        return Math.abs(this.point);
+    }
+
+    /**
+     * Get the direction of the vector in form of a normalised point
+     * 
+     * @returns {-1|0|1} point direction
+     */
+    normalisePoint() {
+        return Vec1.#normalisePoint(this.point);
+    }
+    /*
+     * Determines the normalised point in space based on another point value
+     */
+    static #normalisePoint(point) {
+        if(point > 0) {
+            return 1;
+        } else  if(point < 0) {
+            return -1;
+        }
+        return 0;
+    }
+    /**
+     * Use when there is a need to combine the values of scalar and 
+     * direction to form a vector. The value of 
+     * the scalar corresponds to the magnitude of the resulting vector.
+     *     
+     * @param {number} scalar a positive number
+     * @param {number} direction a positive or negative number 
+     */
+    fromScalarAndDirection(scalar, direction) {
+        this.point = scalar * Vec1.#normalisePoint(direction)
+    }
+    /**
+     * Change the vector point
+     * @param {number} scalar 
+     */
+    changePoint(scalar) {
+        this.point = scalar;
+        this.magnitude = this.#calcNewMagnitude();
+    }
+    
+}
+
+/**
+ * A two dimensional vector
+ */
+export class Vec2 {
+    constructor(x, y) {
+        y = y || 0;
+        x = x || 0;
+        if (x instanceof Vec1) {
+            x = x.point;
+        }
+        this.point = [x, y];
+        
+        this.magnitude = this.#calcNewMagnitude();
+
+    }
+    /**
+     * Add two two dimensional vectors
+     * @param {Vec2} vec2 
+     * @returns {Vec2} resulting vector
+     */
+    add(vec2) {
+        return new Vec2(
+            this.point[0] + vec2.point[0], 
+            this.point[1] + vec2.point[1]
+            )
+    }
+
+    /**
+     * Subtract two two dimensional vectors
+     * @param {Vec2} vec2 
+     * @returns {Vec2} resulting vector
+     */
     subtract(vec2) {
-        const tempVec = new Vec2(vec2.magnitude,[-vec2.coordinate[0],-vec2.coordinate[1]]);
-        return this.add(tempVec);
+        return new Vec2(
+            this.point[0] - vec2.point[0], 
+            this.point[1] - vec2.point[1]
+            )
     }
-    divideBy(scalar) {
-        const tempVec = new Vec2();
-        tempVec.setValues(this.magnitude / scalar, this.coordinate);
-        // because the magnitude changes the point coordinate must be updated
-        return tempVec;
+
+    /**
+     * Divide a vector by a given value
+     * @param {number} value 
+     * @returns {Vec2} resulting vector
+     */
+    divide(value) {
+        return new Vec2(
+            this.point[0] / value, 
+            this.point[1] / value,
+            );
     }
-    multiplyBy(scalar) {
-        const tempVec = new Vec2();
-        tempVec.setValues(this.magnitude * scalar, this.coordinate);
-        return tempVec; 
+
+    /**
+     * Multiply a vector by a given value
+     * @param {number} value 
+     * @returns {Vec2} resulting vector
+     */
+    multiply(value) {
+        return new Vec2(
+            this.point[0] * value,
+            this.point[1] * value
+        );
+    }
+
+    /**
+     * Scale the size of vector
+     * @param {number} factor 
+     */
+    scale(factor) {
+        this.point[0] *= factor;
+        this.point[1] *= factor;
+        this.#calcNewMagnitude();
+    }
+
+    /*
+    * Give the magnitude of the vector
+    */
+    #calcNewMagnitude() {
+        /*
+        * Magnitude is the hypotenuse of right angle triangle formed from x and y
+        */
+        return Math.hypot(this.point[0], this.point[1]);
+
+    }
+    static _normalisePoint(point) {
+        const toRadiusOneRatio = 1 / Math.hypot(point[0], point[1]);
+        return [point[0]*toRadiusOneRatio, point[1]*toRadiusOneRatio];
+    }
+
+    /**
+     * Get the direction of the vector in form of a normalised point.
+     * The magnitude of the point is one and falls at any point on the
+     * circumference of a circle with radius of one.
+     * 
+     * @returns {[number, number]} each point coordinate ranges from -1 to 1 
+     */
+    normalisePoint() {
+        return Vec2._normalisePoint(this.point);
+    }
+
+
+
+    fromScalarAndDirection(scalar, ...direction) {
+        direction[0] = direction[0] || 0; 
+        direction[1] = direction[1] || 0; 
+        
+        this.point = Vec2._normalisePoint(direction[0], direction[1]);
+        this.scale(scalar);
     }
 }
+        

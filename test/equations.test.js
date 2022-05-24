@@ -1,7 +1,7 @@
 import * as assert from 'assert';
-import * as math from '../src/math/math.js';
-import {Vec1, Vec2} from '../src/math/vectors.js'
-
+//import * as math from '../src/math/math.js';
+//import {Vec1, Vec2} from '../src/math/vectors.js'
+/*
 describe("Speed Calculations",()=>{
   
   describe("Speed Method", ()=>{
@@ -50,7 +50,6 @@ describe("Vec1",()=>{
 describe("Vec 2",()=>{
   it("initialize a Vec2",()=>{
     const vec2 = new Vec2(2, [2, 8]);
-    //console.log(vec2.coordinate)
     const ratio = 1 / Math.sqrt(2*2 + 8*8);
     assert.deepEqual(vec2.coordinate, [2*(2*ratio), 2*(8*ratio)]);
   }); 
@@ -114,4 +113,4 @@ describe("AccelerationCalc", ()=>{
 
 
   
-  
+  */
