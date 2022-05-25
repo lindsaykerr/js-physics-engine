@@ -1,4 +1,4 @@
-import { Vec, Vec1, Vec2 } from "./vectors.js"
+import { Vec1, Vec2 } from "./vectors.js"
 
 export const SpeedCalc = {
     /**
@@ -61,7 +61,6 @@ export const velocityCalc = {
      * @returns {Vec1 | Vec2 | Vec3} velocity vector
      */
     velocity: (speed, ...dirCoord) => {
-        dirCoord[0] = dirCoord[0] || 1;
         const vector = {
             1: () => {
                 const tempVec = new Vec1();
@@ -70,7 +69,7 @@ export const velocityCalc = {
             },
             2: () => {
                 const tempVec = new Vec2();
-                tempVec.useMagnitudeAndDirection(speed, dirCoord);
+                tempVec.fromScalarAndDirection(speed, dirCoord);
                 return tempVec;
             },
             3: () => {}
@@ -90,10 +89,17 @@ export const AccelerationCalc = {
      * @param {number} time - time unit
      * @returns {Vec1 | Vec2}
      */
-    acceleration: (oVelocity, fVelocity, time) => fVelocity.subtract(oVelocity).divide(time),
-    /*
-    endSpeed: (startSpeed, acceleration, time) => startSpeed + acceleration * time,
-    startSpeed: (endSpeed, acceleration, time) => endSpeed - acceleration * time,
-    time: (startSpeed, endSpeed, acceleration) => (endSpeed - startSpeed) / acceleration,
-    */
+    acceleration: (sVelocity, fVelocity, time) => fVelocity.subtract(sVelocity).divide(time),
+
+    /**
+     * 
+     * @param {*} startSpeed 
+     * @param {*} acceleration 
+     * @param {*} time 
+     * @returns 
+     */
+    finalVelocity: (sVelocity, acceleration, time) => sVelocity.add(acceleration).multiply(time),
+    startVelocity: (fVelocity, acceleration, time) => fVelocity.subtract(acceleration).multiply(time),
+    //time: (sVelocity, fVelocity, acceleration) => fVelocity.subtract(sVelocity).scale(1/(acceleration.magnitude)),
+    
 }

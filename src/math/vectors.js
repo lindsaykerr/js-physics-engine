@@ -118,7 +118,11 @@ export class Vec2 {
         this.point = [x, y];
         
         this.magnitude = this.#calcNewMagnitude();
-
+    }
+    changePoint(...coordinate) {
+        this.point[0] = coordinate[0] || 0;
+        this.point[1] = coordinate[1] || 0;
+        this.magnitude = this.#calcNewMagnitude();
     }
     /**
      * Add two two dimensional vectors
@@ -175,7 +179,7 @@ export class Vec2 {
     scale(factor) {
         this.point[0] *= factor;
         this.point[1] *= factor;
-        this.#calcNewMagnitude();
+        this.magnitude = this.#calcNewMagnitude();
     }
 
     /*
@@ -189,8 +193,12 @@ export class Vec2 {
 
     }
     static _normalisePoint(point) {
-        const toRadiusOneRatio = 1 / Math.hypot(point[0], point[1]);
-        return [point[0]*toRadiusOneRatio, point[1]*toRadiusOneRatio];
+        const toRadiusOneRatio = 1 / Math.hypot(point[0], point[1]); 
+     
+        if (toRadiusOneRatio !== Infinity) {
+            return [point[0]*toRadiusOneRatio, point[1]*toRadiusOneRatio];
+        }
+        return [0,0];
     }
 
     /**
@@ -210,7 +218,7 @@ export class Vec2 {
         direction[0] = direction[0] || 0; 
         direction[1] = direction[1] || 0; 
         
-        this.point = Vec2._normalisePoint(direction[0], direction[1]);
+        this.point = Vec2._normalisePoint(direction);
         this.scale(scalar);
     }
 }
