@@ -1,5 +1,12 @@
 import { Vec1, Vec2 } from "./vectors.js"
 
+
+/*
+ * Speed s is distance d over time t: f(s) = d/t 
+ */
+const s = (d, t) => d / t
+
+
 export const SpeedCalc = {
     /**
      * Calculates the overall speed for an object when it travels a given distance over a time
@@ -40,7 +47,7 @@ export const SpeedCalc = {
 
 
 
-export const velocityCalc = {
+export const velocity = {
     /**
      * Velocity of an object is a vector comprised of a speed and direction.
      * 
@@ -60,22 +67,19 @@ export const velocityCalc = {
      * 
      * @returns {Vec1 | Vec2 | Vec3} velocity vector
      */
-    velocity: (speed, ...dirCoord) => {
+    fromSpeedAndCoordinate: (speed, ...dirCoord) => {
         const vector = {
             1: () => {
-                const tempVec = new Vec1();
-                tempVec.fromScalarAndDirection(speed, dirCoord[0]);
-                return tempVec;
+                return Vec1.fromScalarAndDirection(speed, dirCoord[0]);
             },
             2: () => {
-                const tempVec = new Vec2();
-                tempVec.fromScalarAndDirection(speed, dirCoord);
-                return tempVec;
+                return Vec2.fromScalarAndCoord(speed, dirCoord);
             },
             3: () => {}
         }
         return vector[dirCoord.length]();
     },
+    fromSpeedAndRadians:
 }
 
 
