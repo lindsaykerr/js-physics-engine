@@ -1,3 +1,4 @@
+/*
 import * as assert from 'assert';
 
 import {Vec1, Vec2} from '../src/math/vectors.js';
@@ -287,8 +288,8 @@ describe("Testing Vec2", ()=>{
             assert.equal(temp.magnitude, Math.hypot(-30,-30));
 
         });
-/*  */
+
     });
  
 
-});
+});*/
