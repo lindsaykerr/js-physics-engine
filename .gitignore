@@ -3,3 +3,4 @@ build
 test-build
 .vscode
 .github
+physics-engine.js
