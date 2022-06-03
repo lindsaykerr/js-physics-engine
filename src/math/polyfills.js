@@ -1,3 +1,5 @@
+
+/** Polyfill for Math.hypot source code provided by mozilla docs*/
 if (!Math.hypot) Math.hypot = function () {
     var max = 0;
     var s = 0;
