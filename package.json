@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha",
     "dev-build": "webpack --config webpack/webpack.dev.cjs --watch",
-    "build": "webpack --config webpack/webpack.config.cjs"
+    "build": "webpack --config webpack/webpack.config.cjs",
+    "start": "webpack serve --open --config webpack/webpack.dev.cjs" 
   },
   "type": "module",
   "repository": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "mocha": "^10.0.0",
     "webpack": "^5.72.1",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.1"
   }
 }
