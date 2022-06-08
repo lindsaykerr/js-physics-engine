@@ -1,3 +1,4 @@
+/*
 import * as assert from 'assert';
 
 import {Vec1, Vec2} from '../src/math/vectors.js';
@@ -25,22 +26,22 @@ describe("Testing Vec1", ()=>{
     describe("Methods", ()=>{
         it("from scalar and direction",()=>{
             const vec = new Vec1();
-            vec.fromScalarAndDirection(60, -1);
+            vec.fromScalarAndCoord(60, -1);
             assert.equal(vec.point, -60);
             
-            vec.fromScalarAndDirection(60, 0);
+            vec.fromScalarAndCoord(60, 0);
             assert.equal(vec.point, 0);
             
-            vec.fromScalarAndDirection(60, 1);
+            vec.fromScalarAndCoord(60, 1);
             assert.equal(vec.point, 60);
             
-            vec.fromScalarAndDirection(0.2, -77.1);
+            vec.fromScalarAndCoord(0.2, -77.1);
             assert.equal(vec.point, -0.2);
             
-            vec.fromScalarAndDirection(0.2, 0);
+            vec.fromScalarAndCoord(0.2, 0);
             assert.equal(vec.point, 0);
             
-            vec.fromScalarAndDirection(1, 11000);
+            vec.fromScalarAndCoord(1, 11000);
             assert.equal(vec.point, 1);
         });
 
@@ -174,25 +175,25 @@ describe("Testing Vec2", ()=>{
                 return 1 / Math.hypot(x, y);
             }
             const vec = new Vec2;
-            vec.fromScalarAndDirection(60, -1 , 0);
+            vec.fromScalarAndCoord(60, -1 , 0);
             assert.deepEqual(vec.point, [-60,0]);
             
             let r = ratio(7,8);
-            vec.fromScalarAndDirection(60, 7, 8);
+            vec.fromScalarAndCoord(60, 7, 8);
             assert.deepEqual(vec.point, [7*r*60, 8*r*60]);
             
             r = ratio(0, 1);
-            vec.fromScalarAndDirection(60, 0, 1);
+            vec.fromScalarAndCoord(60, 0, 1);
             assert.deepEqual(vec.point, [0*r*60, 1* r * 60]);
             
-            vec.fromScalarAndDirection(0.2, -77.1);
+            vec.fromScalarAndCoord(0.2, -77.1);
             assert.deepEqual(vec.point, [-0.2, 0]);
             
-            vec.fromScalarAndDirection(0.2, 0);
+            vec.fromScalarAndCoord(0.2, 0);
             assert.deepEqual(vec.point, [0,0]);
             
             r = ratio(-2, -80)
-            vec.fromScalarAndDirection(-2, -2, -80);
+            vec.fromScalarAndCoord(-2, -2, -80);
             assert.deepEqual(vec.point, [-2*r*-2, -80*r*-2]);
         });
 
@@ -287,8 +288,8 @@ describe("Testing Vec2", ()=>{
             assert.equal(temp.magnitude, Math.hypot(-30,-30));
 
         });
-/*  */
+
     });
  
 
-});
+});*/

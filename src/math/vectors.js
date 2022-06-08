@@ -94,6 +94,7 @@ export class Vec1 {
     fromScalarAndDirection(scalar, direction) {
         this.point = scalar * Vec1.#normalisePoint(direction)
     }
+
     /**
      * Change the vector point
      * @param {number} scalar 
@@ -118,6 +119,7 @@ export class Vec2 {
         this.point = [x, y];
         
         this.magnitude = this.#calcNewMagnitude();
+        return this;
     }
     changePoint(...coordinate) {
         this.point[0] = coordinate[0] || 0;
@@ -214,12 +216,26 @@ export class Vec2 {
 
 
 
-    fromScalarAndDirection(scalar, ...direction) {
+    static fromScalarAndCoord(scalar, ...direction) {
         direction[0] = direction[0] || 0; 
         direction[1] = direction[1] || 0; 
         
-        this.point = Vec2._normalisePoint(direction);
-        this.scale(scalar);
+        const points = Vec2._normalisePoint(direction);
+        return new Vec2(points[0]* scalar, points[1] * scalar)
+    }
+
+    static fromScalarAndRadians(scalar, radians) {
+        const x = scalar * Math.cos(radians);
+        const y = scalar * Math.sin(radians);
+        return new Vec2(x, y);
+    }
+
+    static fromScalarAndAngle(scalar, angle) {
+        angle = angle % 360;
+        const radians = angle * (Math.PI/ 180)
+        const x = scalar * Math.cos(radians);
+        const y = scalar * Math.sin(radians);
+        return new Vec2(x, y);
     }
 }
         
