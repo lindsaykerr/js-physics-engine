@@ -1,16 +1,28 @@
 /**
- * A Vector type
- * @typedef {object} Vector
- * @property {1|2|3} dimension
- * @property {[number]} point
+ * One dimensional vector
+ * @typedef {object} Vec1
+ * @property {1} dimension
+ * @property {number} x
  * @property {number} magnitude 
  */
 
+/**
+ * Two dimensional vector
+ * @typedef {object} Vec2
+ * @property {2}  dimension
+ * @property {number} x
+ * @property {number} y
+ * @property {number} magnitude
+ */
+
+/**
+ * @typedef {Vec1|Vec2} Vector
+ */
 
 /**
  * Initialise a one dimensional Vector
  * @param {number} point 
- * @returns {Vector}
+ * @returns {Vec1}
  */
 export function Vec1(point) {
 
@@ -28,7 +40,7 @@ export function Vec1(point) {
 /**
  * Initialise a two dimensional Vector
  * @param   {...number} point 
- * @returns {Vector}
+ * @returns {Vec2}
  */
 export function Vec2(...point) {
 
@@ -116,7 +128,7 @@ export const vectorDivideBy = (vector, value) => {
 
 
 /**
- * Scales a vector by a factor
+ * Scale a vector by a factor
  * @param   {Vector} vector 
  * @param   {number} factor 
  * @returns {Vector}
@@ -132,7 +144,12 @@ export const scaleVector = (vector, factor) => {
 }
 
 
-
+/**
+ * Create a new vector 2 from a scalar and a direction in radians
+ * @param {number} scalar 
+ * @param {number} radians 
+ * @returns {Vec2}
+ */
 export function Vec2FromRadians(scalar, radians) {
 
     const x = scalar * Math.cos(radians);
@@ -142,14 +159,74 @@ export function Vec2FromRadians(scalar, radians) {
 }
 
 
-
 export function Vec2FromAngle(scalar, angle) {
-
     const radians = (angle % 360) * (Math.PI/ 180)
-    const x = scalar * Math.cos(radians);
-    const y = scalar * Math.sin(radians);
+    return Vec2FromRadians(scalar, radians)
+}
+
+
+/**
+ * Rotate vector 2 by a radian value 
+ * @param {Vec2} vec2 
+ * @param {number} radians 
+ * @returns {Vec2}
+ */
+export function rotateVec2(vec2, radians) {
+    const x = vec2.x * Math.cos(radians) - (vec2.y * Math.sin(radians));
+    const y = vec2.x * Math.sin(radians) + vec2.y * Math.cos(radians);
     
-    return Vec2(x, y);
+    return Vec2(x, y); 
+}
+
+
+/**
+ * Calculate the dot product between two Vec2
+ * @param {Vec2} vec2A 
+ * @param {Vec2} vec2B 
+ * @returns {number} n == 0 is 90 degrees, n > 0 is less than 90, n < 0 greater than 90 
+ */
+export function vec2DotProduct(vec2A, vec2B) {
+    return vec2A.x * vec2B.x + vec2A.y + vec2B.y;
+}
+
+
+/**
+ * Calculates the radians between two vector 2
+ * @param {Vec2} vec2A 
+ * @param {Vec2} vec2B 
+ * @returns {number} radians
+ */
+export function vec2RadiansBetween(vec2A, vec2B) {
+    const vec1 = normaliseVector(vec2A);
+    const vec2 = normaliseVector(vec2B);
+    const dotProd = vec2DotProduct(vec1, vec2);
+    return Math.acos(dotProd);
+}
+
+
+/**
+ * Calculates the angles between two vector 2
+ * @param {Vec2} vec2A 
+ * @param {Vec2} vec2B 
+ * @returns {number} angle
+ */
+export function vec2AngleBetween(vec2A, vec2B) {
+    return radiansToDegrees(vec2RadianBetween(vec2A, vec2B));
+}
+
+/**
+ * Project a vector2 onto another
+ * @param {Vec2} projectVec2 
+ * @param {Vec2} ontoVec2 
+ * @returns {Vec2}
+ */
+export function vec2Project(projectVec2, ontoVec2) {
+    const ontoProd = vec2DotProduct(ontoVec2, ontoVec2);
+    if(ontoProd > 0) {
+        const dotProd = vec2DotProduct(projectVec2, ontoVec2);
+        return scaleVector(ontoVec2, dotProd / ontoProd) 
+    }
+    return ontoProd;
 }
 
 
@@ -179,4 +256,13 @@ export const normaliseVector = (vector) => {
     }
 
     return calcDimension[vector.dimension];
+}
+
+/**
+ * Converts radians to angular degrees
+ * @param {number} radians 
+ * @returns {number} degrees
+ */
+ export function radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
 }

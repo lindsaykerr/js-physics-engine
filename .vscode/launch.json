@@ -5,13 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "name": "Launch Chrome",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "src/physics-engine.js"
-        }
+            "type": "chrome",
+            "url": "http://localhost:5001",
+            "webRoot": "${workspaceFolder}"
+        },
     ]
 }

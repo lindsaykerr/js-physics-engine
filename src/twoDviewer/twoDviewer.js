@@ -1,10 +1,14 @@
+import * as v from '../math/vectorsv2.js';
+
+
 export const sim = {
     canvas : {
         width: 0,
         height: 0,
     },
-    unitRatio: undefined,
+    graphToCanvasRatio: undefined,
     viewer: {
+        originOffset: v.Vec2(),
         edge: {
             left: 0,
             right: 0,
@@ -15,23 +19,26 @@ export const sim = {
     }
 }
 
-const graphCoordsToCanvas = (x, y) => {
-    const canvas = sim.canvas;
-    const edge = sim.viewer.edge;
-    const yOriginRatio = edge.top / (edge.top + Math.abs(edge.bottom));
 
-    const xOriginRatio = edge.right / (edge.right + Math.abs(edge.left));
-    console.log(yOriginRatio, xOriginRatio)
-    return [
-        x + canvas.width * xOriginRatio, -y + canvas.height * yOriginRatio];
-}
 
-const simCoordsToGraph = (sx, sy) => {
-    return [sx * sim.unitRatio, sy * sim.unitRatio]
-}
+/*
+ * Get a canvas coordinates from graph coordinates 
+ */
+const getCanvasCoord = (sx, sy) => {
+    
+    const graphCoordsToCanvas = (x, y) => {  
+        return [
+            x * sim.graphToCanvasRatio, 
+            sim.canvas.height + (-y* sim.graphToCanvasRatio)
+        ];
+    }
 
-const simCoordsToCanvas = (sx, sy) => {
-    return graphCoordsToCanvas(...simCoordsToGraph(sx,sy));
+    const pointFromOrigin = v.Vec2(sx, sy);
+    const pointOnGraph = v.addVectors(
+        sim.viewer.originOffset,
+        v.Vec2(sx, sy));    
+  
+    return graphCoordsToCanvas(pointOnGraph.x, pointOnGraph.y);
 }
 
 
@@ -39,81 +46,68 @@ export const addPoint = (x, y, color) => {
     const ctx = sim.viewer.canvasContext;
     ctx.fillStyle = color || "white";
     ctx.beginPath();
-    ctx.ellipse(...simCoordsToCanvas(x,y), 2, 2, 2*Math.PI,0, 2*Math.PI);
+    ctx.ellipse(...getCanvasCoord(x,y), 2, 2, 2*Math.PI,0, 2*Math.PI);
     ctx.fill();
 }
 
 export const showAxisLines = () => {
     const ctx = sim.viewer.canvasContext;
-    ctx.strokeStyle = "pink";
+;
     ctx.beginPath();
-    ctx.moveTo(...simCoordsToCanvas(sim.viewer.edge.left,0));
-    ctx.lineTo(...simCoordsToCanvas(sim.viewer.edge.right,0));
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 1;
+    ctx.moveTo(...getCanvasCoord(sim.viewer.edge.left,0));
+    ctx.lineTo(...getCanvasCoord(sim.viewer.edge.right,0));
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(...simCoordsToCanvas(0, sim.viewer.edge.top));
-    ctx.lineTo(...simCoordsToCanvas(0, sim.viewer.edge.bottom));
+    ctx.moveTo(...getCanvasCoord(0, sim.viewer.edge.top));
+    ctx.lineTo(...getCanvasCoord(0, sim.viewer.edge.bottom));
     ctx.stroke();
 }
 
 
 /**
+ * Initialises a sim viewer/graph, uses a canvas element with a set width. Edges represent X Y axis range. 
+ * Manipulating these values allows the user to draw various 
+ * graphs with an offset origin, ie the origin is set beyond its default location 
+ * of in the lower left corner, 
  * 
  * @param {HTMLElement} canvas 
+ * @param {number} pY positive Y limit of the graph
+ * @param {number} nY negative Y limit of the graph
+ * @param {number} pX positive X limit of the graph
+ * @param {number} nX negative X limit of the graph
  */
-export function initialise(canvas, ...simBorders) {
-    
-    const setSimBorders = (top, bottom, left, right) => {
-        const edge = sim.viewer.edge;
-        edge.top = top;
-        edge.bottom = bottom;
-        edge.right = right;
-        edge.left = left;
-    }
+export function initialise(canvas, pY, nY, pX, nX) {
+    nY = -nY;
+    nX = -nX;
 
-    
+    // using canvas width set the height based on the provided edge values
+    const graphSize = {
+        y: pY + Math.abs(nY),
+        x: pX + Math.abs(nX)
+    };
+    canvas.setAttribute(
+        "height", 
+        `${(canvas.clientWidth * graphSize.y) /graphSize.x}px`
+    ); 
     sim.canvas.height = canvas.clientHeight;
     sim.canvas.width = canvas.clientWidth;
-
-    switch (simBorders.length) {
-        case 0: (function() {
-                sim.unitRatio = 1;
-                const quadWidth = sim.canvas.width * 0.5;
-                const quadHeight = sim.canvas.height * 0.5;
-                setSimBorders(quadHeight, -quadHeight, -quadWidth, quadWidth);
-            })();
-            break;
-        case 1: (function(){
-                sim.unitRatio = sim.canvas.height / simBorders[0];
-                const quadTop = simBorders[0];
-                const quadSides = (sim.canvas.width * .5) / sim.unitRatio;
-                setSimBorders(quadTop, 0, -quadSides, quadSides);
-            })();
-            
-            break;
-        case 2: (function(){
-                sim.unitRatio = sim.canvas.width / simBorders[1];
-                const quadTop = simBorders[0];
-                const quadRight = simBorders[1];
-                setSimBorders(quadTop, 0, 0, quadRight);
-            })()
-            break;
-            /*
-        case 2: (function() {
-                sim.unitRatio = sim.canvasWeight / (simBorders[0] + ;
-                const quadTop = simBorders[0];
-                const quadLeft = simBorders[1];
-                const quadBottom = simBorders[2];
-                setSimBorders(quadTop, 0, quadLeft, 0);
-            }());
-            break;*/
-    }
+    
+    // value for scaling graph to canvas
+    sim.graphToCanvasRatio = sim.canvas.width / graphSize.x;
 
 
+    // assign edge values 
+    const edge = sim.viewer.edge;
+    edge.top = pY;
+    edge.bottom = nY;
+    edge.right = pX;
+    edge.left = nX;
 
-    /**
-     * @type {CanvasRenderingContext2D}
-     */
+    // gives an offset value to graph
+    sim.viewer.originOffset = v.Vec2(Math.abs(nX), Math.abs(nY)); 
+
     const ctx = canvas.getContext('2d');
     sim.viewer.canvasContext = ctx;
     return ctx;

@@ -3,9 +3,11 @@ import * as viewer from './twoDviewer/twoDviewer.js'
 
 const canvas = document.getElementById("physics-viewer");
 canvas.setAttribute("width", "600px");
-canvas.setAttribute("height", "600px");
-canvas.style.backgroundColor = "#254984";
-viewer.initialise(canvas,100, 100);
-viewer.addPoint(30, 30, "red");
+canvas.style.backgroundColor = "#222222";
+viewer.initialise(canvas, 100, 20, 100, 20);
 viewer.showAxisLines();
-console.log(viewer.sim)
+viewer.addPoint(0,0, "black");
+viewer.addPoint(5, 5, "red");
+viewer.addPoint(5, -5, "green");
+viewer.addPoint(-5, 5, "cyan");
+viewer.addPoint(-5, -5, "white");
