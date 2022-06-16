@@ -1,241 +1,144 @@
-/**
- * A one dimensional vector
- */
-export class Vec1 {
-    /**
-     * Constructs a one dimensional vector 
-     * @param {number} [point] 
-     */
-    constructor(point) {
-        this.point = point || 0;
-        this.magnitude = this.#calcNewMagnitude();
-    }
-    /**
-     * Add two one dimensional vectors
-     * @param {Vec1} vec1 
-     * @returns {Vec1}  
-     */
-    add(vec1) {
-        return new Vec1(this.point + vec1.point);
-    }
-    /**
-     * Subtract two one dimensional vectors
-     * @param {Vec1} vec1 
-     * @returns {Vec1} 
-     */
-    subtract(vec1) {
-        return new Vec1(this.point - vec1.point);
-    }
-    /**
-     * Multiplies a vector by a value
-     * @param {number} value 
-     * @returns {Vec1}
-     */
-    multiply(value) {
-        return new Vec1(this.point * value);
-    }
+export const magnitude = (vec2) => Math.hypot(vec2.x, vec2.y);
 
-    /**
-     * Divide a vector by a value
-     * @param {number} value 
-     * @returns {Vec1}
-     */
-    divide(value) {
-        return new Vec1(this.point / value);
-    }
-    /**
-     * Changing the scale factor of the vector
-     * @param {number} factor 
-     */
 
-    /**
-     * Scale the size of vector
-     * @param {number} factor 
-     */
-    scale(factor) {
-        this.point *= factor;
-        this.magnitude = this.#calcNewMagnitude()
-    }
-    
-    /*
-     * Give the magnitude of the vector
-     */
-    #calcNewMagnitude() {
-        return Math.abs(this.point);
-    }
 
-    /**
-     * Get the direction of the vector in form of a normalised point
-     * 
-     * @returns {-1|0|1} point direction
-     */
-    normalisePoint() {
-        return Vec1.#normalisePoint(this.point);
-    }
-    /*
-     * Determines the normalised point in space based on another point value
-     */
-    static #normalisePoint(point) {
-        if(point > 0) {
-            return 1;
-        } else  if(point < 0) {
-            return -1;
-        }
-        return 0;
-    }
-    /**
-     * Use when there is a need to combine the values of scalar and 
-     * direction to form a vector. The value of 
-     * the scalar corresponds to the magnitude of the resulting vector.
-     *     
-     * @param {number} scalar a positive number
-     * @param {number} direction a positive or negative number 
-     */
-    fromScalarAndDirection(scalar, direction) {
-        this.point = scalar * Vec1.#normalisePoint(direction)
-    }
+export function Vec2(...point) {
 
-    /**
-     * Change the vector point
-     * @param {number} scalar 
-     */
-    changePoint(scalar) {
-        this.point = scalar;
-        this.magnitude = this.#calcNewMagnitude();
+    const x = point[0] || 0;
+    const y = point[1] || 0;
+
+    return {
+        x : x, 
+        y : y,
     }
-    
 }
 
-/**
- * A two dimensional vector
- */
-export class Vec2 {
-    constructor(x, y) {
-        y = y || 0;
-        x = x || 0;
-        if (x instanceof Vec1) {
-            x = x.point;
-        }
-        this.point = [x, y];
-        
-        this.magnitude = this.#calcNewMagnitude();
-        return this;
-    }
-    changePoint(...coordinate) {
-        this.point[0] = coordinate[0] || 0;
-        this.point[1] = coordinate[1] || 0;
-        this.magnitude = this.#calcNewMagnitude();
-    }
-    /**
-     * Add two two dimensional vectors
-     * @param {Vec2} vec2 
-     * @returns {Vec2} resulting vector
-     */
-    add(vec2) {
-        return new Vec2(
-            this.point[0] + vec2.point[0], 
-            this.point[1] + vec2.point[1]
-            )
-    }
-
-    /**
-     * Subtract two two dimensional vectors
-     * @param {Vec2} vec2 
-     * @returns {Vec2} resulting vector
-     */
-    subtract(vec2) {
-        return new Vec2(
-            this.point[0] - vec2.point[0], 
-            this.point[1] - vec2.point[1]
-            )
-    }
-
-    /**
-     * Divide a vector by a given value
-     * @param {number} value 
-     * @returns {Vec2} resulting vector
-     */
-    divide(value) {
-        return new Vec2(
-            this.point[0] / value, 
-            this.point[1] / value,
-            );
-    }
-
-    /**
-     * Multiply a vector by a given value
-     * @param {number} value 
-     * @returns {Vec2} resulting vector
-     */
-    multiply(value) {
-        return new Vec2(
-            this.point[0] * value,
-            this.point[1] * value
-        );
-    }
-
-    /**
-     * Scale the size of vector
-     * @param {number} factor 
-     */
-    scale(factor) {
-        this.point[0] *= factor;
-        this.point[1] *= factor;
-        this.magnitude = this.#calcNewMagnitude();
-    }
-
-    /*
-    * Give the magnitude of the vector
-    */
-    #calcNewMagnitude() {
-        /*
-        * Magnitude is the hypotenuse of right angle triangle formed from x and y
-        */
-        return Math.hypot(this.point[0], this.point[1]);
-
-    }
-    static _normalisePoint(point) {
-        const toRadiusOneRatio = 1 / Math.hypot(point[0], point[1]); 
-     
-        if (toRadiusOneRatio !== Infinity) {
-            return [point[0]*toRadiusOneRatio, point[1]*toRadiusOneRatio];
-        }
-        return [0,0];
-    }
-
-    /**
-     * Get the direction of the vector in form of a normalised point.
-     * The magnitude of the point is one and falls at any point on the
-     * circumference of a circle with radius of one.
-     * 
-     * @returns {[number, number]} each point coordinate ranges from -1 to 1 
-     */
-    normalisePoint() {
-        return Vec2._normalisePoint(this.point);
-    }
 
 
+export const add = (...vectors) => {
+    
+    const x = vectors.reduce((t, v) => t + v.x, 0);
+    const y = vectors.reduce((t, v) => t + v.y, 0);
 
-    static fromScalarAndCoord(scalar, ...direction) {
-        direction[0] = direction[0] || 0; 
-        direction[1] = direction[1] || 0; 
-        
-        const points = Vec2._normalisePoint(direction);
-        return new Vec2(points[0]* scalar, points[1] * scalar)
-    }
-
-    static fromScalarAndRadians(scalar, radians) {
-        const x = scalar * Math.cos(radians);
-        const y = scalar * Math.sin(radians);
-        return new Vec2(x, y);
-    }
-
-    static fromScalarAndAngle(scalar, angle) {
-        angle = angle % 360;
-        const radians = angle * (Math.PI/ 180)
-        const x = scalar * Math.cos(radians);
-        const y = scalar * Math.sin(radians);
-        return new Vec2(x, y);
-    }
+    return Vec2(x,y);
 }
-        
+
+
+
+export const subtract = (...vectors) => {
+    
+    const x = vectors[0].x + vectors.slice(1).reduce((t, v) => t - v.x, 0);
+    const y = vectors[0].y + vectors.slice(1).reduce((t, v) => t - v.y, 0);
+
+    return Vec2(x, y);
+}
+
+
+
+export const divideBy = (vector, value) => {
+    
+    const x = vector.x / value;
+    const y = vector.y / value;
+    
+    return Vec2(x, y);
+} 
+
+
+
+export const scale = (vector, factor) => {
+
+    const x  = vector.x * factor;
+    const y  = vector.y * factor;
+    
+    return Vec2(x, y);
+}
+
+
+
+export function fromRadians(scalar, radians) {
+
+    const x = scalar * Math.cos(radians);
+    const y = scalar * Math.sin(radians);
+    
+    return Vec2(x, y);
+}
+
+
+
+export function fromAngle(scalar, angle) {
+    
+    const radians = (angle % 360) * (Math.PI/ 180);
+
+    return fromRadians(scalar, radians)
+}
+
+
+
+export function rotate(vector, radians) {
+    
+    const x = vector.x * Math.cos(radians) - (vector.y * Math.sin(radians));
+    const y = vector.x * Math.sin(radians) + vector.y * Math.cos(radians);
+    
+    return Vec2(x, y); 
+}
+
+
+
+export function dotProduct(vecA, vecB) {
+    
+    return vecA.x * vecB.x + vecA.y + vecB.y;
+}
+
+
+
+export function radiansBetween(vecA, vecB) {
+    
+    const a = normalise(vecA);
+    const b = normalise(vecB);
+    
+    const dotProd = dotProduct(a, b);
+    
+    return Math.acos(dotProd);
+}
+
+
+
+export function angleBetween(vec2A, vec2B) {
+    
+    return radiansToDegrees(vec2RadianBetween(vec2A, vec2B));
+}
+
+
+
+export function project(projectVec2, ontoVec2) {
+
+    const ontoProd = dotProduct(ontoVec2, ontoVec2);
+    if(ontoProd > 0) {
+        const dotProd = dotProduct(projectVec2, ontoVec2);
+        return scale(ontoVec2, dotProd / ontoProd) 
+    }
+    
+    return ontoProd;
+}
+
+
+
+
+export const normalise = (vector) => {
+
+    const ratio = 1 / Math.hypot(vector.x, vector.y); 
+    
+    if (ratio === Infinity) return Vec2(0,0);
+    
+    const x = vector.x*ratio;
+    const y = vector.y*ratio;
+
+    return Vec2(x, y);
+}
+
+
+
+export function radiansToDegrees(radians) {
+
+    return radians * (180 / Math.PI);
+}

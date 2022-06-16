@@ -1,4 +1,4 @@
-import * as v from '../math/vectorsv2.js';
+import * as v from '../math/vectors.js';
 
 
 export const sim = {
@@ -34,7 +34,7 @@ const getCanvasCoord = (sx, sy) => {
     }
 
     const pointFromOrigin = v.Vec2(sx, sy);
-    const pointOnGraph = v.addVectors(
+    const pointOnGraph = v.add(
         sim.viewer.originOffset,
         v.Vec2(sx, sy));    
   
@@ -52,7 +52,6 @@ export const addPoint = (x, y, color) => {
 
 export const showAxisLines = () => {
     const ctx = sim.viewer.canvasContext;
-;
     ctx.beginPath();
     ctx.strokeStyle = "white";
     ctx.lineWidth = 1;
@@ -64,6 +63,16 @@ export const showAxisLines = () => {
     ctx.lineTo(...getCanvasCoord(0, sim.viewer.edge.bottom));
     ctx.stroke();
 }
+
+export const lineSegment = (x1, y1, x2, y2, color, width) => {
+    const ctx = sim.viewer.canvasContext;
+    ctx.strokeStyle = color || "white";
+    ctx.lineWidth = width || 1;
+    ctx.beginPath();
+    ctx.moveTo(...getCanvasCoord(x1, y1));
+    ctx.lineTo(...getCanvasCoord(x2, y2));
+    ctx.stroke();
+} 
 
 
 /**
