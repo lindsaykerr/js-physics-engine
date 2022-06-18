@@ -67,9 +67,9 @@ export const averageVelocity = (sVelocity, fVelocity) => {
 
 /* Force */
 
-export const netForce = forceVectors => {
+export const netForce = (...forceVectors) => {
 
-    return vector.add(forceVectors);
+    return vector.add(...forceVectors);
 }
 
 
@@ -105,7 +105,7 @@ export const finalVelocityFromAcceleration = (startVelocity, acceleration, time)
     
     return vector.add(startVelocity, accelByTime);
 }
-
+ 
 
 
 export const distanceFromAcceleration = (startVelocity, acceleration, time) =>{

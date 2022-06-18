@@ -6,8 +6,9 @@ module.exports = {
     devServer: {
         static: './build'
     },
+
     output: {
         filename: "physics-engine.js",
-        path: path.resolve(__dirname, '../', 'test-build'),
+        path: path.resolve(__dirname, '../', 'build'),
     },
 }
