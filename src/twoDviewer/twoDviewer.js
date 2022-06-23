@@ -41,12 +41,25 @@ const getCanvasCoord = (sx, sy) => {
     return graphCoordsToCanvas(pointOnGraph.x, pointOnGraph.y);
 }
 
+export const clear = () => {
+    const ctx = sim.viewer.canvasContext;
+    ctx.clearRect(0,0, sim.canvas.width, sim.canvas.height);
+}
+
 
 export const addPoint = (x, y, color) => {
     const ctx = sim.viewer.canvasContext;
     ctx.fillStyle = color || "white";
     ctx.beginPath();
     ctx.ellipse(...getCanvasCoord(x,y), 2, 2, 2*Math.PI,0, 2*Math.PI);
+    ctx.fill();
+}
+
+export const addSphere = (centerX, centerY, radius, color) => {
+    const ctx = sim.viewer.canvasContext;
+    ctx.fillStyle = color || "white";
+    ctx.beginPath();
+    ctx.ellipse(...getCanvasCoord(centerX,centerY), radius, radius, 2*Math.PI,0, 2*Math.PI);
     ctx.fill();
 }
 

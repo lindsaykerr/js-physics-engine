@@ -7,9 +7,11 @@ export class SimObject {
         // when the object is initialised it has a net force
         // and acceleration is 0, thus the object is moving at 
         // a constant velocity;
+        this.ballast = (direction > 90)? -1 : 1;
         const N = mass * accelerationValue;
         console.log("starting N", N);
         this.mass = mass;
+        this.atRest = false;
         this.force = vector.fromAngle(N, direction);
         console.log("starting force", this.force)
         this.position = {
@@ -19,35 +21,37 @@ export class SimObject {
     }
 
     update(time, friction) {
-        // attempt to simulate the forces applied on a lawn bowl
-        // if object is at rest return
-        if (this.force.x + this.force.y === 0) return;
+        /* Attempt to simulate the forces applied on a lawn bowl */
 
-        // find the direction of the current main force vector
+        if (this.atRest) return;
+
+        // First, find the direction of the current main force vector
         const normaliseDirection1 = vector.normalise(this.force);
 
         // rotate the direction so that it is perpendicular 
         const perpToNetForce = vector.rotate(normaliseDirection1, Math.PI/2);
-        // create a perpendicular force to apply to the object
-        const turnForce = vector.scale(perpToNetForce, (this.mass*.05) / time);
+
+        // create a perpendicular force by applying a magnitude to the direction
+        const turnForce = vector.scale(perpToNetForce, (this.ballast*this.mass*.05) / time);
+        
         // apply the perpendicular force to the main force
         this.force = phy.netForce(turnForce, this.force);
 
-        // get the new direction from the main force vector
+        // get the direction of the force again
         const normaliseDirection2 = vector.normalise(this.force);
        
-        // newtons applied by friction at the given rate
+        // determine how many newtons will be applied to the friction
         const N = (this.mass * friction) / time; 
         
-        // friction force
+        // create a friction force
         const resistance = vector.scale(normaliseDirection2, (-1 * N)/time);
     
         const netForce = phy.netForce(this.force, resistance);
         
         // clamp the net force to 0,0
-        if (netForce.x * 10 + netForce.y * 10 < 0) {
+        if ((netForce.x * 1 + netForce.y * 1) < 0) {
+            this.atRest = true;
             this.force = vector.Vec2(0, 0);
-            return;
         } else {
             this.force = netForce;
         }
@@ -60,19 +64,20 @@ export class SimObject {
 }
 
 export class Sim {
-    constructor(obj) {
-        this.obj = obj;
-        this.forces = [vector.fromAngle(.2, 260)];
-        this.time = 0;
+    constructor() {
         this.prevTime = 0;
+        this.objects = [];
+        this.friction = .7;
     }
 
 
     cycle(time) {
-       this.obj.update((time-this.prevTime), .7);
-       this.prevTime = time;
+        for (const obj of this.objects) { 
+            obj.update((time-this.prevTime), this.friction);        
+        }
+        this.prevTime = time;
     }
-    timing(time) {
-        
+    add(simObj) {
+        this.objects.push(simObj);
     }
 } 
