@@ -2,13 +2,17 @@ const path = require('path');
 
 module.exports = {
     mode: "development",
-    entry: "./src/physics-engine.js",
+    entry: {
+        engine: "./src/physics-engine.js",
+        sim: "./src/simulator.js",
+    },
     devServer: {
-        static: './build'
+        static: './app-dev'
     },
 
     output: {
-        filename: "physics-engine.js",
-        path: path.resolve(__dirname, '../', 'build'),
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, '../app-dev', 'build'),
+        clean: true,
     },
 }

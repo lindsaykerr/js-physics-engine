@@ -1,22 +1,21 @@
-import * as vector from '../math/vectors.js';
-import * as phy from '../math/physicsformula.js';
+import * as vector from './math/vectors.js';
+import * as phy from './math/physicsformula.js';
 
 //
-export class SimObject {
-    constructor(direction, accelerationValue, mass) {
+class SimObject {
+    constructor(id, position, direction, accelerationValue, mass) {
         // when the object is initialised it has a net force
         // and acceleration is 0, thus the object is moving at 
         // a constant velocity;
+        this.id = id || 1;
         this.ballast = (direction > 90)? -1 : 1;
         const N = mass * accelerationValue;
-        console.log("starting N", N);
         this.mass = mass;
         this.atRest = false;
         this.force = vector.fromAngle(N, direction);
-        console.log("starting force", this.force)
         this.position = {
-            x: 0,
-            y: 0,
+            x: position.x,
+            y: position.y,
         }
     }
 
@@ -63,11 +62,12 @@ export class SimObject {
     }
 }
 
-export class Sim {
+class Simulator {
     constructor() {
         this.prevTime = 0;
         this.objects = [];
         this.friction = .7;
+        this.nextObjectId = 1;
     }
 
 
@@ -77,7 +77,40 @@ export class Sim {
         }
         this.prevTime = time;
     }
-    add(simObj) {
+    add(ObjectMeta) {
+        const simObj = new SimObject(
+            ObjectMeta.id || this.nextObjectId++, 
+            ObjectMeta.position || {x:0, y:0},
+            ObjectMeta.direction || 90,
+            ObjectMeta.acceleration || 0,
+            ObjectMeta.mass || 1
+            )
         this.objects.push(simObj);
     }
+    getObjects() {
+        return this.objects;
+    }
 } 
+
+const sim = {
+    instance : null,
+}
+
+onmessage = (e) => {
+    const command = e.data.command;
+    const input = e.data.input;
+    switch(command) {
+        case 'initialise': 
+            sim.instance = new Simulator(input);
+            break;
+        case 'stop':
+            break;
+        case 'cycle':
+            sim.instance.cycle(input); 
+            postMessage({command:"sim-objects", input: sim.instance.getObjects()});
+            break;
+        case 'sim-object': 
+            sim.instance.add(input);
+            break;
+    }
+}
