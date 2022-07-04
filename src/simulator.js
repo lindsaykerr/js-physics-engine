@@ -27,7 +27,7 @@ const OBJECT_SHAPES = {
             size: sizeVec,
         }
     },
-    orientedRectangle: (centerVec, toCornerVec, rotationFloat) {
+    orientedRectangle: (centerVec, toCornerVec, rotationFloat) => {
         return {
             center: centerVec,
             toCorner: toCornerVec,
