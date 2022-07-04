@@ -1,9 +1,47 @@
 import * as vector from './math/vectors.js';
 import * as phy from './math/physicsformula.js';
 
+/* Sim Object Shapes */
+const OBJECT_SHAPES = {
+    line: (baseVec, directionVec) => {
+        return {
+            base: baseVec,
+            direction: directionVec,
+        }
+    },
+    segment: (pointA_vec, pointB_vec) => {
+        return {
+            pointA: pointA_vec,
+            pointB: pointB_vec,
+        }
+    },
+    circle: (centerVec, radiusVec) => {
+        return {
+            center: centerVec,
+            radius: radiusVec,
+        }
+    },
+    rectangle: (originVec, sizeVec) => {
+        return {
+            origin: originVec,
+            size: sizeVec,
+        }
+    },
+    orientedRectangle: (centerVec, toCornerVec, rotationFloat) {
+        return {
+            center: centerVec,
+            toCorner: toCornerVec,
+            rotation: rotationFloat,
+        }
+    }
+
+}
+
+
+
 //
 class SimObject {
-    constructor(id, position, direction, accelerationValue, mass) {
+    constructor(id, position, direction, accelerationValue, mass, objectShape) {
         // when the object is initialised it has a net force
         // and acceleration is 0, thus the object is moving at 
         // a constant velocity;
