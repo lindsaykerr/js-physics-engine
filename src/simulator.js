@@ -1,59 +1,30 @@
 import * as vector from './math/vectors.js';
 import * as phy from './math/physicsformula.js';
 
-/* Sim Object Shapes */
-const OBJECT_SHAPES = {
-    line: (baseVec, directionVec) => {
-        return {
-            base: baseVec,
-            direction: directionVec,
-        }
-    },
-    segment: (pointA_vec, pointB_vec) => {
-        return {
-            pointA: pointA_vec,
-            pointB: pointB_vec,
-        }
-    },
-    circle: (centerVec, radiusVec) => {
-        return {
-            center: centerVec,
-            radius: radiusVec,
-        }
-    },
-    rectangle: (originVec, sizeVec) => {
-        return {
-            origin: originVec,
-            size: sizeVec,
-        }
-    },
-    orientedRectangle: (centerVec, toCornerVec, rotationFloat) => {
-        return {
-            center: centerVec,
-            toCorner: toCornerVec,
-            rotation: rotationFloat,
-        }
-    }
 
+const circleToCircleCollision = (circleA, circleB) => {
+    const minDistance = circleA.radius + circleB.radius;
+    const betweenTwoVec = vector.subtract(circleA.position, circleB.position);
+    const ActualDistance = vector.magnitude(betweenTwoVec);
+    return ActualDistance <= minDistance;
 }
-
-
 
 //
 class SimObject {
-    constructor(id, position, direction, accelerationValue, mass, objectShape) {
+    constructor(metaObject) {
         // when the object is initialised it has a net force
         // and acceleration is 0, thus the object is moving at 
         // a constant velocity;
-        this.id = id || 1;
-        this.ballast = (direction > 90)? -1 : 1;
-        const N = mass * accelerationValue;
-        this.mass = mass;
+        const physicsProps = metaObject.physics;
+        this.id = metaObject.id || 1;
+        this.ballast = (physicsProps.directionDegree > 90)? -1 : 1;
+        const N = physicsProps.mass * physicsProps.acceleration;
+        this.mass = physicsProps.mass;
         this.atRest = false;
-        this.force = vector.fromAngle(N, direction);
+        this.force = vector.fromAngle(N, physicsProps.directionDegree);
         this.position = {
-            x: position.x,
-            y: position.y,
+            x: metaObject.x || 0,
+            y: metaObject.y || 0,
         }
     }
 
@@ -98,6 +69,27 @@ class SimObject {
         this.position = newPos;
 
     }
+    testCollision() {}
+}
+
+class CircleObject extends SimObject {
+    constructor(metaObject) {
+        
+        super(metaObject);
+        this.shapetype = metaObject.shape.type;
+        this.radius = metaObject.shape.radius;
+        this.position = metaObject.shape.centerVector;
+    }
+
+    testCollision(simObj) {
+        switch(simObj.shapetype) {
+            case 'circle':
+                if (circleToCircleCollision(this, simObj)) {
+                    console.log(this.id, "Collided with", simObj.id);
+                }
+            break;
+        }
+    }
 }
 
 class Simulator {
@@ -111,20 +103,36 @@ class Simulator {
 
     cycle(time) {
         for (const obj of this.objects) { 
-            obj.update((time-this.prevTime), this.friction);        
+            obj.update((time - this.prevTime), this.friction);
+            for(const objs of this.objects) {
+                //console.log("testing collision")
+                if (obj.id !== objs.id) {
+                    obj.testCollision(objs);
+                }
+            }        
         }
         this.prevTime = time;
     }
     add(ObjectMeta) {
-        const simObj = new SimObject(
-            ObjectMeta.id || this.nextObjectId++, 
-            ObjectMeta.position || {x:0, y:0},
-            ObjectMeta.direction || 90,
-            ObjectMeta.acceleration || 0,
-            ObjectMeta.mass || 1
-            )
+        let simObj = null;
+        switch(ObjectMeta.shape.type) {
+            
+            case 'circle':
+                simObj = new CircleObject(ObjectMeta);
+            break;
+            default:
+                simObj = new SimObject(
+                    ObjectMeta.id || this.nextObjectId++, 
+                    ObjectMeta.position || {x:0, y:0},
+                    ObjectMeta.direction || 90,
+                    ObjectMeta.acceleration || 0,
+                    ObjectMeta.mass || 1
+                    )
+            break;
+        } 
         this.objects.push(simObj);
     }
+
     getObjects() {
         return this.objects;
     }
